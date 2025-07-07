@@ -1,10 +1,13 @@
+import 'dart:math';
+
 void main()
 {
-  final sarah = Person(name: "Sarah", age: 36, height: 5.8);
-  final elias = Person(name: "Elias", age: 22, height: 6.1);
-
-  sarah.printDescription();
-  elias.printDescription();
+  final person = Person.fromJson({
+    'name' : 'Andrea',
+    'age' : 36,
+  });
+  final json = person.toJson();
+  print(json);
 }
 
 List<T> where<T>(List<T> items, bool Function(T) f)
@@ -37,16 +40,30 @@ class Person
   Person({
     required this.name,
     required this.age,
-    required this.height
   });
   final String name;
   final int age;
-  final double height;
 
   void printDescription()
   {
-    print("My name is ${this.name}. I'm ${this.age} years old, I'm ${this.height} feet tall.");
+    print("My name is ${this.name}. I'm ${this.age} years old.");
   }
+
+  factory Person.fromJson(Map<String, Object> json)
+  {
+    final name = json['name'];
+    final age = json['age'];
+    if (name is String && age is int)
+    {
+      return Person(name: name, age: age);
+    }
+    else {throw StateError('Name or age is of the wrong type');}
+  }
+  Map<String, Object> toJson() => 
+  {
+    'name' : name,
+    'age' : age,
+  };
 }
 
 class Resturant
@@ -69,5 +86,64 @@ class Resturant
       return 0;
     }
     return ratings.reduce((value, element) => value + element) / ratings.length;
+  }
+}
+
+abstract class Shape
+{
+  double get area;
+  double get perimeter;
+
+  void printValues()
+  {
+    print(this.area);
+    print(this.perimeter);
+  }
+}
+
+class Square extends Shape
+{
+  Square(this.side);
+  final double side;
+
+  @override
+  double get area => side * side;
+  @override
+  double get perimeter => 4 * side;
+}
+
+class Circle extends Shape
+{
+  Circle(this.radius);
+  final double radius;
+
+  @override
+  double get area => pi * radius * radius;
+  @override
+  double get perimeter => 2 * pi * radius;
+}
+
+class Point
+{
+  const Point(this.x, this.y);
+  final int x;
+  final int y;
+
+  @override
+  String toString() => 'Point($x, $y)';
+  @override
+  bool operator ==(covariant Point other)
+  {
+    return x == other.x && y == other.y;
+  }
+
+  Point operator +(covariant Point other)
+  {
+    return Point(x + other.x, y + other.y);
+  }
+
+  Point operator *(covariant int other)
+  {
+    return Point(x * other, y * other);
   }
 }

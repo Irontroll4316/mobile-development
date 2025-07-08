@@ -1,0 +1,12 @@
+name: test
+
+description: A simple command-line application
+
+environment: 
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  http: 0.13.1
+
+dev_dependancies:
+  pedantic: ^1.9.0

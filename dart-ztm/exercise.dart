@@ -1,13 +1,9 @@
 import 'dart:math';
 
-void main()
+Future<void> main() async
 {
-  final person = Person.fromJson({
-    'name' : 'Andrea',
-    'age' : 36,
-  });
-  final json = person.toJson();
-  print(json);
+  await countdown(5);
+  print("Done");
 }
 
 List<T> where<T>(List<T> items, bool Function(T) f)
@@ -145,5 +141,44 @@ class Point
   Point operator *(covariant int other)
   {
     return Point(x * other, y * other);
+  }
+}
+
+extension Range on int
+{
+  List<int> rangeTo(int other)
+  {
+    if (other < this)
+    {
+      return [];
+    }
+    var list = [this];
+    for (var i = this + 1; i <= other; i++)
+    {
+      list.add(i);
+    }
+    return list;
+  }
+}
+
+class EmailAddress
+{
+  EmailAddress(this.email)
+  {
+    if (email.isEmpty || !email.contains('@'))
+    {
+      throw FormatException('Email must contain @ character');
+    }
+  }
+  final String email;
+  @override
+  String toString() => "$email";
+}
+
+Future<void> countdown(int n) async
+{
+  for (var i = n; i >= 0; i--)
+  {
+    await Future.delayed(Duration(seconds: 1), () => print(i));
   }
 }

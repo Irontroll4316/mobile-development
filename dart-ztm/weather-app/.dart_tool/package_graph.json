@@ -32,6 +32,11 @@
       "dependencies": []
     },
     {
+      "name": "meta",
+      "version": "1.17.0",
+      "dependencies": []
+    },
+    {
       "name": "http_parser",
       "version": "4.1.2",
       "dependencies": [
@@ -40,11 +45,6 @@
         "string_scanner",
         "typed_data"
       ]
-    },
-    {
-      "name": "collection",
-      "version": "1.19.1",
-      "dependencies": []
     },
     {
       "name": "typed_data",
@@ -70,13 +70,13 @@
       ]
     },
     {
-      "name": "term_glyph",
-      "version": "1.2.2",
+      "name": "collection",
+      "version": "1.19.1",
       "dependencies": []
     },
     {
-      "name": "meta",
-      "version": "1.17.0",
+      "name": "term_glyph",
+      "version": "1.2.2",
       "dependencies": []
     }
   ],

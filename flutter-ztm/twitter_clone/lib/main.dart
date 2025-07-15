@@ -33,6 +33,14 @@ class MyApp extends ConsumerWidget {
           return const SignIn();
         }
       ),
+      theme: ThemeData(
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.indigo,
+          shadowColor: Colors.transparent,
+          titleTextStyle: TextStyle(color: Colors.white, fontSize: 24),
+          centerTitle: true,
+        )
+      )
     );
   }
 }

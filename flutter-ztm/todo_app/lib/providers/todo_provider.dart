@@ -2,11 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo_app/models/todo.dart';
 
 final todoProvider = StateNotifierProvider<TodoListNotifier, List<Todo>>((ref) {
-  return TodoListNotifier();
+  return TodoListNotifier(<Todo>[]);
 });
 
 class TodoListNotifier extends StateNotifier<List<Todo>> {
-  TodoListNotifier(): super([]);
+  TodoListNotifier(defaultState): super([]) {
+    state = defaultState;
+  }
 
   void addTodo(String content) {
     state = [

@@ -36,7 +36,7 @@ class _SignInState extends ConsumerState<SignIn> {
               ),
               SizedBox(height: 50),
               Text(
-                "Log in to Twitter Clone™", 
+                "Log in to Twitter", 
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 22,

@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:offline_first_notes/features/auth/cubit/auth_cubit.dart';
 import 'package:offline_first_notes/features/auth/pages/signup.dart';
+import 'package:offline_first_notes/features/home/cubit/add_new_task_cubit.dart';
 import 'package:offline_first_notes/features/home/pages/home_page.dart';
 
 void main() {
   runApp(
     MultiBlocProvider(
-      providers: [BlocProvider(create: (_) => AuthCubit())],
+      providers: [
+        BlocProvider(create: (_) => AuthCubit()),
+        BlocProvider(create: (_) => AddNewTaskCubit()),
+      ],
       child: const MyApp(),
     ),
   );

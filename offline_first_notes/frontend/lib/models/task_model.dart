@@ -1,13 +1,18 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:offline_first_notes/core/constants/utils.dart';
+
 class TaskModel {
   final String id;
   final String uid;
   final String title;
+  final Color color;
   final String description;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime dueAt;
+  final int isSynced;
 
   TaskModel({
     required this.id,
@@ -17,6 +22,8 @@ class TaskModel {
     required this.createdAt,
     required this.updatedAt,
     required this.dueAt,
+    required this.color,
+    required this.isSynced,
   });
 
   TaskModel copyWith({
@@ -27,6 +34,8 @@ class TaskModel {
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? dueAt,
+    Color? color,
+    int? isSynced,
   }) {
     return TaskModel(
       id: id ?? this.id,
@@ -36,6 +45,8 @@ class TaskModel {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       dueAt: dueAt ?? this.dueAt,
+      color: color ?? this.color,
+      isSynced: isSynced ?? this.isSynced,
     );
   }
 
@@ -45,9 +56,11 @@ class TaskModel {
       'uid': uid,
       'title': title,
       'description': description,
-      'createdAt': createdAt.millisecondsSinceEpoch,
-      'updatedAt': updatedAt.millisecondsSinceEpoch,
-      'dueAt': dueAt.millisecondsSinceEpoch,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+      'dueAt': dueAt.toIso8601String(),
+      'color': rgbToHex(color),
+      'isSynced': isSynced,
     };
   }
 
@@ -57,9 +70,11 @@ class TaskModel {
       uid: map['uid'] ?? '',
       title: map['title'] ?? '',
       description: map['description'] ?? '',
-      createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(map['updatedAt']),
-      dueAt: DateTime.fromMillisecondsSinceEpoch(map['dueAt']),
+      createdAt: DateTime.parse(map['createdAt']),
+      updatedAt: DateTime.parse(map['updatedAt']),
+      dueAt: DateTime.parse(map['dueAt']),
+      color: hexToRgb(map['color']),
+      isSynced: map['isSynced'] ?? 1,
     );
   }
 
@@ -70,7 +85,7 @@ class TaskModel {
 
   @override
   String toString() {
-    return 'TaskModel(id: $id, uid: $uid, title: $title, description: $description, createdAt: $createdAt, updatedAt: $updatedAt, dueAt: $dueAt)';
+    return 'TaskModel(id: $id, uid: $uid, title: $title, description: $description, createdAt: $createdAt, updatedAt: $updatedAt, dueAt: $dueAt, color: $color, isSynced: $isSynced)';
   }
 
   @override
@@ -83,7 +98,9 @@ class TaskModel {
         other.description == description &&
         other.createdAt == createdAt &&
         other.updatedAt == updatedAt &&
-        other.dueAt == dueAt;
+        other.dueAt == dueAt &&
+        other.color == color &&
+        other.isSynced == isSynced;
   }
 
   @override
@@ -94,6 +111,8 @@ class TaskModel {
         description.hashCode ^
         createdAt.hashCode ^
         updatedAt.hashCode ^
-        dueAt.hashCode;
+        dueAt.hashCode ^
+        color.hashCode ^
+        isSynced.hashCode;
   }
 }

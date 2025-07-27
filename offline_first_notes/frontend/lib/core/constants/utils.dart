@@ -1,12 +1,5 @@
 import 'package:flutter/material.dart';
 
-Color strengthenColor(Color color, double factor) {
-  int r = (color.r * factor).clamp(0, 255).toInt();
-  int g = (color.g * factor).clamp(0, 255).toInt();
-  int b = (color.b * factor).clamp(0, 255).toInt();
-  return Color.fromARGB(color.a.round(), r, g, b);
-}
-
 List<DateTime> generateWeekDates(int weekOffset) {
   final today = DateTime.now();
   DateTime startOfWeek = today.subtract(Duration(days: today.weekday - 1));
@@ -15,7 +8,7 @@ List<DateTime> generateWeekDates(int weekOffset) {
 }
 
 String rgbToHex(Color color) {
-  return '${((color.r * 255).round() & 0xff).toString().padLeft(2, '0')}${((color.g * 255).round() & 0xff).toString().padLeft(2, '0')}${((color.b * 255).round() & 0xff).toString().padLeft(2, '0')}';
+  return '${((color.r * 255).round() & 0xff).toRadixString(16).padLeft(2, '0')}${((color.g * 255).round() & 0xff).toRadixString(16).padLeft(2, '0')}${((color.b * 255).round() & 0xff).toRadixString(16).padLeft(2, '0')}';
 }
 
 Color hexToRgb(String color) {

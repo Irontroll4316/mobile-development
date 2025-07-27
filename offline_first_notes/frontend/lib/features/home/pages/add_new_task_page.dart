@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:offline_first_notes/features/auth/cubit/auth_cubit.dart';
-import 'package:offline_first_notes/features/home/cubit/add_new_task_cubit.dart';
+import 'package:offline_first_notes/features/home/cubit/tasks_cubit.dart';
+import 'package:offline_first_notes/features/home/pages/home_page.dart';
 
 class AddNewTaskPage extends StatefulWidget {
   static route() =>
@@ -16,53 +17,92 @@ class AddNewTaskPage extends StatefulWidget {
 
 class AddNewTaskPageState extends State<AddNewTaskPage> {
   DateTime selectedDate = DateTime.now();
+  TimeOfDay selectedTime = TimeOfDay.now();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   Color selectedColor = Colors.lime.shade300;
   final formKey = GlobalKey<FormState>();
 
+  DateTime get combinedDateTime => DateTime(
+    selectedDate.year,
+    selectedDate.month,
+    selectedDate.day,
+    selectedTime.hour,
+    selectedTime.minute,
+  );
+
   void createNewTask() async {
     if (formKey.currentState!.validate()) {
       AuthLoggedIn user = context.read<AuthCubit>().state as AuthLoggedIn;
-      await context.read<AddNewTaskCubit>().createNewTask(
+      await context.read<TasksCubit>().createNewTask(
+        uid: user.user.id,
         title: _titleController.text,
         description: _descriptionController.text,
         color: selectedColor,
         token: user.user.token,
-        dueAt: selectedDate,
+        dueAt: combinedDateTime,
       );
     }
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose;
+    _descriptionController.dispose;
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add New Text"),
+        title: const Text("Add New Task!"),
         actions: [
-          GestureDetector(
-            onTap: () async {
-              final pickedDate = await showDatePicker(
-                context: context,
-                firstDate: DateTime.now(),
-                lastDate: DateTime.now().add(Duration(days: 90)),
-              );
-              if (pickedDate != null) {
-                setState(() {
-                  selectedDate = pickedDate;
-                });
-              }
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(DateFormat("MM-d-y").format(selectedDate)),
-            ),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  final pickedDate = await showDatePicker(
+                    context: context,
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(Duration(days: 90)),
+                  );
+                  if (pickedDate != null) {
+                    setState(() {
+                      selectedDate = pickedDate;
+                    });
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(DateFormat("MM/d/y").format(selectedDate)),
+                ),
+              ),
+
+              GestureDetector(
+                onTap: () async {
+                  final pickedTime = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay.now(),
+                  );
+                  if (pickedTime != null) {
+                    setState(() {
+                      selectedTime = pickedTime;
+                    });
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(selectedTime.format(context)),
+                ),
+              ),
+            ],
           ),
         ],
       ),
-      body: BlocConsumer<AddNewTaskCubit, AddNewTaskState>(
+      body: BlocConsumer<TasksCubit, TasksState>(
         listener: (context, state) {
-          if (state is AddNewTasksError) {
+          if (state is TasksError) {
             ScaffoldMessenger.of(
               context,
             ).showSnackBar((SnackBar(content: Text(state.error))));
@@ -70,11 +110,15 @@ class AddNewTaskPageState extends State<AddNewTaskPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               (const SnackBar(content: Text("Task Added Succcessfully"))),
             );
-            Navigator.pop(context);
+            Navigator.pushAndRemoveUntil(
+              context,
+              HomePage.route(),
+              (_) => false,
+            );
           }
         },
         builder: (context, state) {
-          if (state is AddNewTasksLoading) {
+          if (state is TasksLoading) {
             return const Center(child: CircularProgressIndicator());
           }
           return Padding(
@@ -115,11 +159,12 @@ class AddNewTaskPageState extends State<AddNewTaskPage> {
                       });
                     },
                     color: selectedColor,
-                    pickersEnabled: const {ColorPickerType.wheel: true},
                   ),
                   const SizedBox(height: 25),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      createNewTask();
+                    },
                     child: const Text(
                       "ADD TASK",
                       style: TextStyle(color: Colors.white, fontSize: 18),

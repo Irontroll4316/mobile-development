@@ -19,13 +19,12 @@ class AuthRemoteRepository {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email, 'password': password}),
       );
-
       if (res.statusCode != 200) {
         throw jsonDecode(res.body)['error'];
       }
       return UserModel.fromJson(res.body);
     } catch (e) {
-      throw (e.toString());
+      throw ("auth_remote_repository -> ${e.toString()} ");
     }
   }
 
@@ -65,7 +64,7 @@ class AuthRemoteRepository {
               'x-auth-token': token,
             },
           )
-          .timeout(Duration(seconds: 5));
+          .timeout(Duration(seconds: 2));
       if (res.statusCode != 200 || jsonDecode(res.body) == false) {
         return null;
       }

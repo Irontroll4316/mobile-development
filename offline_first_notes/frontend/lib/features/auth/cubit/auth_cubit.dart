@@ -26,7 +26,7 @@ class AuthCubit extends Cubit<AuthState> {
       );
       emit(AuthSignUp());
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError("auth_cubit signup -> ${e.toString()}"));
     }
   }
 
@@ -42,7 +42,7 @@ class AuthCubit extends Cubit<AuthState> {
       await authLocalRepository.insertUser(userModel);
       emit(AuthLoggedIn(userModel));
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError("auth_cubit login -> ${e.toString()}"));
     }
   }
 

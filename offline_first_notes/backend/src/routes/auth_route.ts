@@ -81,7 +81,6 @@ authRouter.post("/tokenIsValid", async (req, res) => {
 });
 
 authRouter.get("/", auth, async (req: AuthRequest, res) => {
-    console.log(req.user);
     try {
         if (!req.user) {
             res.status(401).json({error: "User not found!"});

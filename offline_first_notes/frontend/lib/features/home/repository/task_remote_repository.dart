@@ -13,7 +13,7 @@ class TaskRemoteRepository {
   Future<TaskModel> createTask({
     required String title,
     required String description,
-    required String hexColor,
+    required String color,
     required String token,
     required String uid,
     required DateTime dueAt,
@@ -29,15 +29,14 @@ class TaskRemoteRepository {
             body: jsonEncode({
               'title': title,
               'description': description,
-              'hexColor': hexColor,
+              'color': color,
               'dueAt': dueAt.toIso8601String(),
             }),
           )
-          .timeout(Duration(seconds: 2));
+          .timeout(Duration(seconds: 1));
       if (res.statusCode != 201) {
         throw jsonDecode(res.body)['error'];
       }
-
       return TaskModel.fromJson(res.body);
     } catch (e) {
       try {
@@ -49,7 +48,7 @@ class TaskRemoteRepository {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           dueAt: dueAt,
-          color: hexToRgb(hexColor),
+          color: hexToRgb(color),
           isSynced: 0,
         );
         await taskLocalRepository.insertTask(taskModel);
@@ -70,7 +69,7 @@ class TaskRemoteRepository {
               'x-auth-token': token,
             },
           )
-          .timeout(Duration(seconds: 2));
+          .timeout(Duration(seconds: 1));
       if (res.statusCode != 200) {
         throw jsonDecode(res.body)['error'];
       }
@@ -87,6 +86,34 @@ class TaskRemoteRepository {
         return tasks;
       }
       throw ("task_remote_repository.getTasks -> \n${e.toString()}");
+    }
+  }
+
+  Future<bool> syncTasks({
+    required String token,
+    required List<TaskModel> tasks,
+  }) async {
+    try {
+      final taskListInMapFormat = [];
+      for (final task in tasks) {
+        taskListInMapFormat.add(task.toMap());
+      }
+      final res = await http
+          .post(
+            Uri.parse("${Constants.backendUri}/tasks/sync"),
+            headers: {
+              'Content-Type': 'application/json',
+              'x-auth-token': token,
+            },
+            body: jsonEncode(taskListInMapFormat),
+          )
+          .timeout(Duration(seconds: 1));
+      if (res.statusCode != 201) {
+        throw jsonDecode(res.body)['error'];
+      }
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 }

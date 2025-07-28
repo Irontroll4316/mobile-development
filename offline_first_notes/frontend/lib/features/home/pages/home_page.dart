@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
     context.read<TasksCubit>().getAllTasks(token: user.user.token);
     Connectivity().onConnectivityChanged.listen((data) async {
       if (data.contains(ConnectivityResult.wifi)) {
-        await context.read<TasksCubit>().syncTasks();
+        await context.read<TasksCubit>().syncTasks(user.user.token);
       }
     });
   }

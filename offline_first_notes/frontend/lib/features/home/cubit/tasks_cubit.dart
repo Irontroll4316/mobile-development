@@ -26,7 +26,7 @@ class TasksCubit extends Cubit<TasksState> {
         uid: uid,
         title: title,
         description: description,
-        hexColor: rgbToHex(color),
+        color: rgbToHex(color),
         token: token,
         dueAt: dueAt,
       );
@@ -47,8 +47,17 @@ class TasksCubit extends Cubit<TasksState> {
     }
   }
 
-  Future<void> syncTasks() async {
+  Future<void> syncTasks(String token) async {
     final unsyncedTasks = await taskLocalRepository.getUnsycnedTasks();
-    print(unsyncedTasks);
+    if (unsyncedTasks.isEmpty) return;
+    final isSynced = await taskRemoteRepository.syncTasks(
+      token: token,
+      tasks: unsyncedTasks,
+    );
+    if (isSynced) {
+      for (final task in unsyncedTasks) {
+        taskLocalRepository.updateRowValue(task.id, 1);
+      }
+    }
   }
 }

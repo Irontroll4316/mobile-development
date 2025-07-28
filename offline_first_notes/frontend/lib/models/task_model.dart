@@ -23,7 +23,7 @@ class TaskModel {
     required this.updatedAt,
     required this.dueAt,
     required this.color,
-    required this.isSynced,
+    this.isSynced = 1,
   });
 
   TaskModel copyWith({

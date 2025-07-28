@@ -86,4 +86,14 @@ class TaskLocalRepository {
     }
     return [];
   }
+
+  Future<void> updateRowValue(String id, int newValue) async {
+    final db = await database;
+    await db.update(
+      tableName,
+      {'isSynced': newValue},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }

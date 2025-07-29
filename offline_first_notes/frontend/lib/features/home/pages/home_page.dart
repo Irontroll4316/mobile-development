@@ -20,6 +20,16 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   DateTime selectedDate = DateTime.now();
 
+  Future<void> completeTask(String id, int completed) async {
+    AuthLoggedIn user = context.read<AuthCubit>().state as AuthLoggedIn;
+
+    await context.read<TasksCubit>().completeTask(
+      user.user.token,
+      id,
+      completed,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -80,31 +90,37 @@ class _HomePageState extends State<HomePage> {
                     itemCount: tasks.length,
                     itemBuilder: (context, index) {
                       final task = tasks[index];
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: TaskCard(
-                              color: task.color,
-                              header: task.title,
-                              descriptionText: task.description,
+                      return GestureDetector(
+                        onDoubleTap: () async {
+                          await completeTask(task.id, task.completed);
+                        },
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TaskCard(
+                                color: task.color,
+                                header: task.title,
+                                descriptionText: task.description,
+                                completed: task.completed,
+                              ),
                             ),
-                          ),
-                          Container(
-                            height: 10,
-                            width: 10,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade700,
-                              shape: BoxShape.circle,
+                            Container(
+                              height: 10,
+                              width: 10,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade700,
+                                shape: BoxShape.circle,
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: Text(
-                              DateFormat.jm().format(task.dueAt),
-                              style: TextStyle(fontSize: 17),
+                            Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: Text(
+                                DateFormat.jm().format(task.dueAt),
+                                style: TextStyle(fontSize: 17),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       );
                     },
                   ),

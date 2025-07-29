@@ -56,8 +56,33 @@ class TasksCubit extends Cubit<TasksState> {
     );
     if (isSynced) {
       for (final task in unsyncedTasks) {
-        taskLocalRepository.updateRowValue(task.id, 1);
+        taskLocalRepository.updateisSynced(task.id, 1);
       }
+    }
+  }
+
+  Future<void> completeTask(String token, String tid, int completed) async {
+    try {
+      final newCompleted = completed == 1 ? 0 : 1;
+      taskLocalRepository.updatecompleted(tid, newCompleted);
+      await taskRemoteRepository.completeTask(
+        token: token,
+        id: tid,
+        completed: newCompleted,
+      );
+      if (state is GetTasksSuccess) {
+        final newState = state as GetTasksSuccess;
+        final newMap = newState.tasks.map((task) {
+          if (task.id == tid) {
+            return task.copyWith(completed: newCompleted);
+          } else {
+            return task;
+          }
+        }).toList();
+        emit(GetTasksSuccess(newMap));
+      }
+    } catch (e) {
+      emit(TasksError("tasks_cubit.completeTask -> ${e.toString()}"));
     }
   }
 }

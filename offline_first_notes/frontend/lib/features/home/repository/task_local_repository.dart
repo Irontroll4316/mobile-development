@@ -31,7 +31,8 @@ class TaskLocalRepository {
         createdAt TEXT NOT NULL,
         updatedAt TEXT NOT NULL,
         color TEXT NOT NULL,
-        isSynced INTEGER NOT NULL
+        isSynced INTEGER NOT NULL,
+        completed INTEGER NOT NULL
         )
         ''');
       },
@@ -58,6 +59,7 @@ class TaskLocalRepository {
   }
 
   Future<List<TaskModel>> getTasks() async {
+    print(":(");
     final db = await database;
     final result = await db.query(tableName);
     if (result.isNotEmpty) {
@@ -87,11 +89,21 @@ class TaskLocalRepository {
     return [];
   }
 
-  Future<void> updateRowValue(String id, int newValue) async {
+  Future<void> updateisSynced(String id, int newValue) async {
     final db = await database;
     await db.update(
       tableName,
       {'isSynced': newValue},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<void> updatecompleted(String id, int newValue) async {
+    final db = await database;
+    await db.update(
+      tableName,
+      {'completed': newValue},
       where: 'id = ?',
       whereArgs: [id],
     );

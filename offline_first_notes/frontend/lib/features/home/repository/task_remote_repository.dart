@@ -33,7 +33,7 @@ class TaskRemoteRepository {
               'dueAt': dueAt.toIso8601String(),
             }),
           )
-          .timeout(Duration(seconds: 1));
+          .timeout(Duration(milliseconds: 250));
       if (res.statusCode != 201) {
         throw jsonDecode(res.body)['error'];
       }
@@ -69,7 +69,7 @@ class TaskRemoteRepository {
               'x-auth-token': token,
             },
           )
-          .timeout(Duration(seconds: 1));
+          .timeout(Duration(milliseconds: 250));
       if (res.statusCode != 200) {
         throw jsonDecode(res.body)['error'];
       }
@@ -107,11 +107,40 @@ class TaskRemoteRepository {
             },
             body: jsonEncode(taskListInMapFormat),
           )
-          .timeout(Duration(seconds: 1));
+          .timeout(Duration(milliseconds: 250));
       if (res.statusCode != 201) {
         throw jsonDecode(res.body)['error'];
       }
       return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> completeTask({
+    required String token,
+    required String id,
+    required int completed,
+  }) async {
+    try {
+      final res = await http
+          .post(
+            Uri.parse("${Constants.backendUri}/tasks/complete"),
+            headers: {
+              'Content-Type': 'application/json',
+              'x-auth-token': token,
+            },
+            body: jsonEncode({'id': id, 'completed': completed}),
+          )
+          .timeout(Duration(milliseconds: 250));
+      if (res.statusCode != 201) {
+        throw jsonDecode(res.body)['error'];
+      }
+      if (jsonDecode(res.body)) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
       return false;
     }

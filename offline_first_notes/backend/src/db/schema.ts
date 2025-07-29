@@ -21,6 +21,7 @@ export const tasks = pgTable("tasks", {
     dueAt: timestamp("due_at").$defaultFn(() => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
+    completed: integer("completed").default(0),
 });
 
 export type Task = typeof tasks.$inferSelect;

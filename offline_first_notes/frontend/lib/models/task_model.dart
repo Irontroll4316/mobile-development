@@ -13,6 +13,7 @@ class TaskModel {
   final DateTime updatedAt;
   final DateTime dueAt;
   final int isSynced;
+  final int completed;
 
   TaskModel({
     required this.id,
@@ -24,7 +25,12 @@ class TaskModel {
     required this.dueAt,
     required this.color,
     this.isSynced = 1,
+    this.completed = 0,
   });
+
+  set completed(int completed) {
+    this.completed = completed;
+  }
 
   TaskModel copyWith({
     String? id,
@@ -36,6 +42,7 @@ class TaskModel {
     DateTime? dueAt,
     Color? color,
     int? isSynced,
+    int? completed,
   }) {
     return TaskModel(
       id: id ?? this.id,
@@ -47,6 +54,7 @@ class TaskModel {
       dueAt: dueAt ?? this.dueAt,
       color: color ?? this.color,
       isSynced: isSynced ?? this.isSynced,
+      completed: completed ?? this.completed,
     );
   }
 
@@ -61,6 +69,7 @@ class TaskModel {
       'dueAt': dueAt.toIso8601String(),
       'color': rgbToHex(color),
       'isSynced': isSynced,
+      'completed': completed,
     };
   }
 
@@ -75,6 +84,7 @@ class TaskModel {
       dueAt: DateTime.parse(map['dueAt']),
       color: hexToRgb(map['color']),
       isSynced: map['isSynced'] ?? 1,
+      completed: map['completed'] ?? 0,
     );
   }
 
@@ -85,7 +95,7 @@ class TaskModel {
 
   @override
   String toString() {
-    return 'TaskModel(id: $id, uid: $uid, title: $title, description: $description, createdAt: $createdAt, updatedAt: $updatedAt, dueAt: $dueAt, color: $color, isSynced: $isSynced)';
+    return 'TaskModel(id: $id, uid: $uid, title: $title, description: $description, createdAt: $createdAt, updatedAt: $updatedAt, dueAt: $dueAt, color: $color, isSynced: $isSynced, completed $completed)';
   }
 
   @override
@@ -100,7 +110,8 @@ class TaskModel {
         other.updatedAt == updatedAt &&
         other.dueAt == dueAt &&
         other.color == color &&
-        other.isSynced == isSynced;
+        other.isSynced == isSynced &&
+        other.completed == completed;
   }
 
   @override
@@ -113,6 +124,7 @@ class TaskModel {
         updatedAt.hashCode ^
         dueAt.hashCode ^
         color.hashCode ^
-        isSynced.hashCode;
+        isSynced.hashCode ^
+        completed.hashCode;
   }
 }

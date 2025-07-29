@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { auth, AuthRequest } from "../middleware/auth_middleware";
-import { NewTask, tasks } from "../db/schema";
+import { NewTask, Task, tasks } from "../db/schema";
 import { db } from "../db/index_db";
 import { eq } from 'drizzle-orm';
 
@@ -9,8 +9,8 @@ const taskRouter = Router();
 taskRouter.post("/", auth, async(req: AuthRequest, res) => {
   try {
     req.body = {...req.body, dueAt: new Date(req.body.dueAt), uid: req.user!};
-     const newTask: NewTask = req.body;
-     const [task] = await db.insert(tasks).values(newTask).returning();
+    const newTask: NewTask = req.body;
+    const [task] = await db.insert(tasks).values(newTask).returning();
     res.status(201).json(task);
     } catch (e) {
     res.status(500).json({error: e});
@@ -47,6 +47,17 @@ taskRouter.post("/sync", auth, async(req: AuthRequest, res) => {
     const pushedTasks = await db.insert(tasks).values(filteredTasks).returning();
     res.status(201).json(pushedTasks);
   } catch (e) {
+    res.status(500).json({error: e});
+  }
+});
+
+// This route updates the 'completeness' of the task
+taskRouter.post("/complete", auth, async(req: AuthRequest, res) => {
+  try {
+    const task: Task = req.body;
+    await db.update(tasks).set({completed: task.completed, updatedAt: new Date(Date.now())}).where(eq(tasks.id, task.id));
+    res.status(201).json(true);
+    } catch (e) {
     res.status(500).json({error: e});
   }
 });

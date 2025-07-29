@@ -64,7 +64,7 @@ class AuthRemoteRepository {
               'x-auth-token': token,
             },
           )
-          .timeout(Duration(seconds: 1));
+          .timeout(Duration(milliseconds: 250));
       if (res.statusCode != 200 || jsonDecode(res.body) == false) {
         return null;
       }

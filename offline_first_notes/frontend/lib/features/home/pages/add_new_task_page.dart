@@ -1,10 +1,13 @@
 import 'package:flex_color_picker/flex_color_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:offline_first_notes/features/auth/cubit/auth_cubit.dart';
 import 'package:offline_first_notes/features/home/cubit/tasks_cubit.dart';
 import 'package:offline_first_notes/features/home/pages/home_page.dart';
+import 'package:offline_first_notes/features/home/widgets/template_picker.dart';
+import 'package:offline_first_notes/models/template_model.dart';
 
 class AddNewTaskPage extends StatefulWidget {
   static route() =>
@@ -22,6 +25,8 @@ class AddNewTaskPageState extends State<AddNewTaskPage> {
   final TextEditingController _descriptionController = TextEditingController();
   Color selectedColor = Colors.lime.shade300;
   final formKey = GlobalKey<FormState>();
+  String picker = "templatePicker";
+  TemplateModel? selectedTemplate;
 
   DateTime get combinedDateTime => DateTime(
     selectedDate.year,
@@ -38,7 +43,7 @@ class AddNewTaskPageState extends State<AddNewTaskPage> {
         uid: user.user.id,
         title: _titleController.text,
         description: _descriptionController.text,
-        color: selectedColor,
+        color: selectedTemplate?.color ?? selectedColor,
         token: user.user.token,
         dueAt: combinedDateTime,
       );
@@ -47,8 +52,8 @@ class AddNewTaskPageState extends State<AddNewTaskPage> {
 
   @override
   void dispose() {
-    _titleController.dispose;
-    _descriptionController.dispose;
+    _titleController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -122,7 +127,7 @@ class AddNewTaskPageState extends State<AddNewTaskPage> {
             return const Center(child: CircularProgressIndicator());
           }
           return Padding(
-            padding: const EdgeInsets.all(30),
+            padding: const EdgeInsets.fromLTRB(30, 30, 30, 80),
             child: Form(
               key: formKey,
               child: Column(
@@ -150,16 +155,54 @@ class AddNewTaskPageState extends State<AddNewTaskPage> {
                     },
                   ),
                   const SizedBox(height: 15),
-                  ColorPicker(
-                    heading: const Text("Select Color"),
-                    subheading: const Text("Select A Different Shade"),
-                    onColorChanged: (Color color) {
-                      setState(() {
-                        selectedColor = color;
-                      });
-                    },
-                    color: selectedColor,
+                  SizedBox(
+                    width: double.infinity,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CupertinoSlidingSegmentedControl(
+                        children: {
+                          'templatePicker': Text(
+                            "Choose Template",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          'colorPicker': Text(
+                            "Choose Color",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        },
+                        onValueChanged: (String? str) {
+                          if (str != null) {
+                            setState(() {
+                              picker = str;
+                            });
+                          }
+                        },
+                        groupValue: picker,
+                      ),
+                    ),
                   ),
+                  if (picker == 'colorPicker')
+                    ColorPicker(
+                      subheading: const Text("Select A Different Shade"),
+                      onColorChanged: (Color color) {
+                        setState(() {
+                          selectedColor = color;
+                        });
+                      },
+                      color: selectedColor,
+                    ),
+                  if (picker == 'templatePicker')
+                    Expanded(
+                      child: TemplatePicker(
+                        onTemplateChanged: (TemplateModel template) {
+                          setState(() {
+                            selectedTemplate = template;
+                          });
+                        },
+                        template: selectedTemplate,
+                      ),
+                    ),
+
                   const SizedBox(height: 25),
                   ElevatedButton(
                     onPressed: () {

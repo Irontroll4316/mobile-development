@@ -26,3 +26,14 @@ export const tasks = pgTable("tasks", {
 
 export type Task = typeof tasks.$inferSelect;
 export type NewTask = typeof tasks.$inferInsert;
+
+export const templates = pgTable("templates", {
+    name: text("name").primaryKey(),
+    color: text("color").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    lastUsed: timestamp("last_used").defaultNow(),
+    uid: uuid("uid").notNull().references(() => users.id, {onDelete: "cascade"}),
+});
+
+export type Template = typeof templates.$inferSelect;
+export type NewTemplate = typeof templates.$inferInsert;

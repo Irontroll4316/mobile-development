@@ -1,29 +1,30 @@
 services:
-  backend:
+  backend-offline-first-notes:
     build:
       context: ./
+    container_name: backend-offline-first-notes
     ports:
       - "8000:8000"
     environment:
       - PORT=8000
       - DATABASE_URL=postgresql://user:password@db:5432/mydb
     depends_on:
-      - db
+      - db-offline-first-notes
     volumes:
       - type: bind
         source: .
         target: /app
       - /app/node_modules
 
-  db:
+  db-offline-first-notes:
     image: postgres:17
-    container_name: postgres_container
+    container_name: db-offline-first-notes
     restart: always
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: mydb
-    ports: 
+    ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data

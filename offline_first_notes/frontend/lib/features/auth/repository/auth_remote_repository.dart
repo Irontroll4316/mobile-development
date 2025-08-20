@@ -7,7 +7,7 @@ import 'package:offline_first_notes/models/user_model.dart';
 
 class AuthRemoteRepository {
   final spService = SpService();
-  final authLocalRepositroy = AuthLocalRepository();
+  final authLocalRepository = AuthLocalRepository();
 
   Future<UserModel> login({
     required String email,
@@ -77,7 +77,7 @@ class AuthRemoteRepository {
       }
       return UserModel.fromJson(userResponse.body);
     } catch (e) {
-      final user = await authLocalRepositroy.getUser();
+      final user = await authLocalRepository.getUser();
       return user;
     }
   }
